@@ -8,6 +8,8 @@ from azulejo import TILE_SIZE, DATA_DIR, CACHE_DIR
 
 def preprocess():
     """Resize all images to same size and save it to """
+    show_dimensions()
+    remove_duplicates()
     for image_name in reversed(sorted(os.listdir(DATA_DIR))):
         image = Image.open(DATA_DIR + image_name)
         resized = image.resize(TILE_SIZE)
