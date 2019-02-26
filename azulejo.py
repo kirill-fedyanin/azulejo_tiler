@@ -6,8 +6,8 @@ import numpy as np
 from tiler import Generator, Trainer
 
 TILE_SIZE = (32, 32)
-DATA_DIR = 'data/'
-CACHE_DIR = 'preprocessed/'
+DATA_DIR = "data/"
+CACHE_DIR = "preprocessed/"
 
 
 def generate_tile():
@@ -16,7 +16,11 @@ def generate_tile():
 
 def train_tiler():
     """Train tiler on given images"""
-    config = {}
+    config = {
+        'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
+        'hidden_size': 64,
+        'batch_size': 5
+    }
     images = _load_images()
     trainer = Trainer(images, config)
     trainer.train()

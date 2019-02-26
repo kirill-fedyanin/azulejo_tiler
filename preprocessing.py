@@ -7,7 +7,7 @@ from azulejo import TILE_SIZE, DATA_DIR, CACHE_DIR
 
 
 def preprocess():
-    """Resize all images to same size and save it to """
+    """Resize all images to same size and save it to"""
     show_dimensions()
     remove_duplicates()
     for image_name in reversed(sorted(os.listdir(DATA_DIR))):
@@ -30,7 +30,7 @@ def remove_duplicates():
             diff = np.array(image) - np.array(prev_image)
             if not np.any(diff):
                 os.remove(DATA_DIR + image_name)
-                print(image_name, 'deleted')
+                print(image_name, "deleted")
 
         prev_image = image
 
