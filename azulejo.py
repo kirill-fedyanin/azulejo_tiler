@@ -19,7 +19,9 @@ def train_tiler():
     config = {
         'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
         'hidden_size': 64,
-        'batch_size': 5
+        'batch_size': 16,
+        'epochs': 1000,
+        'lr': 1e-3
     }
     images = _load_images()
     trainer = Trainer(images, config)

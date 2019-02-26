@@ -11,8 +11,6 @@ class Network(nn.Module):
 
         coef = 5
 
-        self.fc = nn.Linear(in_size, in_size)
-
         self.fc1 = nn.Linear(in_size, coef*hidden_size)
         self.fc2 = nn.Linear(coef*hidden_size, hidden_size)
         self.fc3 = nn.Linear(hidden_size, coef*hidden_size)
@@ -24,6 +22,6 @@ class Network(nn.Module):
         x = torch.tanh(self.fc1(images))
         x = torch.tanh(self.fc2(x))
         x = torch.tanh(self.fc3(x))
-        x = torch.tanh(self.fc4(x))
+        x = torch.sigmoid(self.fc4(x))
 
         return x
