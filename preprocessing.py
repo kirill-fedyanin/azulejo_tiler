@@ -6,10 +6,15 @@ import numpy as np
 
 TARGET_SIZE = (236, 236)
 DATA_DIR = 'data/'
+CACHE_DIR = 'preprocessed/'
 
 
 def preprocess():
     """Resize all images to same size and save it to """
+    for image_name in reversed(sorted(os.listdir(DATA_DIR))):
+        image = Image.open(DATA_DIR + image_name)
+        resized = image.resize(TARGET_SIZE)
+        resized.save(CACHE_DIR + image_name)
 
 
 def remove_duplicates():
@@ -35,7 +40,6 @@ def show_dimensions():
     """Print biggest and smallest image dimensions"""
     min_d = (10e6, 10e6)
     max_d = (0, 0)
-
     for image_name in os.listdir(DATA_DIR):
         image = Image.open(DATA_DIR + image_name)
         height, width = image.size
@@ -50,4 +54,4 @@ def show_dimensions():
 
 
 if __name__ == "__main__":
-    remove_duplicates()
+    preprocess()
