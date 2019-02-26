@@ -3,16 +3,14 @@ import os
 from PIL import Image
 import numpy as np
 
-TARGET_SIZE = (236, 236)
-DATA_DIR = 'data/'
-CACHE_DIR = 'preprocessed/'
+from azulejo import TILE_SIZE, DATA_DIR, CACHE_DIR
 
 
 def preprocess():
     """Resize all images to same size and save it to """
     for image_name in reversed(sorted(os.listdir(DATA_DIR))):
         image = Image.open(DATA_DIR + image_name)
-        resized = image.resize(TARGET_SIZE)
+        resized = image.resize(TILE_SIZE)
         resized.save(CACHE_DIR + image_name)
 
 
