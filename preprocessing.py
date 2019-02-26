@@ -1,7 +1,6 @@
 import os
+
 from PIL import Image
-from PIL import ImageChops
-import PIL
 import numpy as np
 
 TARGET_SIZE = (236, 236)
