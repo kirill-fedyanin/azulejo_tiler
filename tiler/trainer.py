@@ -20,7 +20,6 @@ class Trainer:
         image_num = len(self.images)
 
         for e in range(self.config['epochs']):
-            print(e)
             self.optimizer.zero_grad()
 
             indices = np.random.choice(image_num, self.config['batch_size'])
@@ -30,10 +29,13 @@ class Trainer:
             loss = self.loss(restored.view((-1, *self.config['dimensions'])), image_batch)
             loss.backward()
             self.optimizer.step()
+            print(e, loss.item())
 
     def validate(self):
         image_batch = self._prepare_images(self.images[5*self.config['batch_size']:6*self.config['batch_size']])
         restored = self.net(image_batch)
+        loss = self.loss(restored.view((-1, *self.config['dimensions'])), image_batch)
+        print('validation loss', loss.item())
         self._show(image_batch, restored.detach().view((-1, *self.config['dimensions'])))
 
     def _prepare_images(self, images):

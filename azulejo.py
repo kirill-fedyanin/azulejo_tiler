@@ -20,7 +20,7 @@ def train_tiler():
         'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
         'hidden_size': 64,
         'batch_size': 16,
-        'epochs': 1000,
+        'epochs': 250,
         'lr': 1e-3
     }
     images = _load_images()
