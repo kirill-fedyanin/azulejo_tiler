@@ -18,11 +18,13 @@ def train_tiler():
     """Train tiler on given images"""
     config = {
         'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
-        'hidden_size': 128,
+        'hidden_size': 64,
         'batch_size': 16,
-        'epochs': 1000,
+        'epochs': 1,
         'lr': 1e-3,
-        'validation_size': 16
+        'validation_size': 16,
+        'model_file': 'model/temp.pt',
+        'restore': True
     }
     images = _load_images()
     trainer = Trainer(images, config)
