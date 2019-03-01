@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .net import Network
+from .helpers import normalize, denormalize
 
 
 class Trainer:
@@ -11,7 +12,7 @@ class Trainer:
     def __init__(self, images, config):
         self._init_net(config)
         self.config = config
-        self.images = self._normalize(np.stack(images))
+        self.images = normalize(np.stack(images), config)
         self.loss = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=config['lr'])
 
@@ -54,8 +55,8 @@ class Trainer:
         return image_batch
 
     def _show(self, source, result):
-        source = torch.clamp(self._denormalize(source) / 255, 0, 1)
-        result = torch.clamp(self._denormalize(result) / 255, 0, 1)
+        source = denormalize(source, self.config)
+        result = denormalize(result, self.config)
         num = len(source)
         plt.figure(figsize=(22, 6))
         for i in range(num):
@@ -64,10 +65,3 @@ class Trainer:
             plt.subplot(2, num, num+i+1)
             plt.imshow(result[i])
         plt.show()
-
-    def _normalize(self, images):
-        self.norm = {'mean': np.mean(images), 'variation': 2*np.std(images)}
-        return (images - self.norm['mean']) / self.norm['variation']
-
-    def _denormalize(self, images):
-        return images * self.norm['variation'] + self.norm['mean']

@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .net import Network
+from .helpers import normalize, denormalize
 
 
 class Generator:
@@ -19,4 +20,5 @@ class Generator:
         self.net.eval()
 
     def generate(self):
-        return self.net().detach().view(self.config['dimensions'])
+        image = self.net().detach().view(self.config['dimensions'])
+        return denormalize(image, self.config)

@@ -9,16 +9,24 @@ from tiler import Generator, Trainer
 TILE_SIZE = (32, 32)
 DATA_DIR = "data/"
 CACHE_DIR = "preprocessed/"
+MEAN = 139.
+VARIATION = 152.
 
+config = {
+    'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
+    'hidden_size': 64,
+    'batch_size': 16,
+    'epochs': 1500,
+    'lr': 1e-3,
+    'mean': MEAN,
+    'variation': VARIATION,
+    'validation_size': 16,
+    'model_file': 'model/temp.pt',
+    'restore': True
+}
 
 def generate_tile():
     """Generate new random tile"""
-    config = {
-        'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
-        'hidden_size': 64,
-        'model_file': 'model/temp.pt'
-    }
-
     generator = Generator(config)
     num = 10
     for i in range(num):
@@ -29,22 +37,9 @@ def generate_tile():
     plt.show()
 
 
-
-
-
-
 def train_tiler():
     """Train tiler on given images"""
-    config = {
-        'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
-        'hidden_size': 64,
-        'batch_size': 16,
-        'epochs': 1,
-        'lr': 1e-3,
-        'validation_size': 16,
-        'model_file': 'model/temp.pt',
-        'restore': True
-    }
+
     images = _load_images()
     trainer = Trainer(images, config)
     trainer.train()
