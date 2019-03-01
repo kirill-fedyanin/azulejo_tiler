@@ -21,7 +21,8 @@ def train_tiler():
         'hidden_size': 128,
         'batch_size': 16,
         'epochs': 1000,
-        'lr': 1e-3
+        'lr': 1e-3,
+        'validation_size': 16
     }
     images = _load_images()
     trainer = Trainer(images, config)

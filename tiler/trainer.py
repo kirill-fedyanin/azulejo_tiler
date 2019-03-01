@@ -24,12 +24,12 @@ class Trainer:
         return (images * self.norm['variation'] + self.norm['mean'])
 
     def train(self):
-        image_num = len(self.images)
+        train_num = len(self.images) - self.config['validation_size']
 
         for e in range(self.config['epochs']):
             self.optimizer.zero_grad()
 
-            indices = np.random.choice(image_num, self.config['batch_size'])
+            indices = np.random.choice(train_num, self.config['batch_size'])
             image_batch = self._prepare_images(self.images[indices])
             restored = self.net(image_batch)
 
@@ -39,7 +39,7 @@ class Trainer:
             print(e, loss.item())
 
     def validate(self):
-        image_batch = self._prepare_images(self.images[5*self.config['batch_size']:6*self.config['batch_size']])
+        image_batch = self._prepare_images(self.images[-self.config['validation_size']:])
         restored = self.net(image_batch)
         loss = self.loss(restored.view((-1, *self.config['dimensions'])), image_batch)
         print('validation loss', loss.item())
