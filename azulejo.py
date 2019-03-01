@@ -2,6 +2,7 @@ import os
 
 from PIL import Image
 import numpy as np
+import matplotlib.pyplot as plt
 
 from tiler import Generator, Trainer
 
@@ -12,6 +13,24 @@ CACHE_DIR = "preprocessed/"
 
 def generate_tile():
     """Generate new random tile"""
+    config = {
+        'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
+        'hidden_size': 64,
+        'model_file': 'model/temp.pt'
+    }
+
+    generator = Generator(config)
+    num = 10
+    for i in range(num):
+        image = generator.generate()
+        plt.subplot(1, num, i+1)
+        plt.imshow(image)
+    print(image)
+    plt.show()
+
+
+
+
 
 
 def train_tiler():
@@ -41,4 +60,5 @@ def _load_images():
 
 
 if __name__ == '__main__':
-    train_tiler()
+    # train_tiler()
+    generate_tile()
