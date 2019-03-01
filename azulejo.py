@@ -18,9 +18,9 @@ def train_tiler():
     """Train tiler on given images"""
     config = {
         'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
-        'hidden_size': 64,
+        'hidden_size': 128,
         'batch_size': 16,
-        'epochs': 250,
+        'epochs': 1000,
         'lr': 1e-3
     }
     images = _load_images()
@@ -39,5 +39,3 @@ def _load_images():
 
 if __name__ == '__main__':
     train_tiler()
-
-

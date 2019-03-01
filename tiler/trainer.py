@@ -12,9 +12,16 @@ class Trainer:
         in_size = np.prod(config['dimensions'])
         self.net = Network(in_size, config['hidden_size'])
         self.config = config
-        self.images = np.stack(images)
+        self.images = self._normalize(np.stack(images))
         self.loss = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=config['lr'])
+
+    def _normalize(self, images):
+        self.norm = {'mean': np.mean(images), 'variation': 2*np.std(images)}
+        return (images - self.norm['mean']) / self.norm['variation']
+
+    def _denormalize(self, images):
+        return (images * self.norm['variation'] + self.norm['mean'])
 
     def train(self):
         image_num = len(self.images)
@@ -40,10 +47,11 @@ class Trainer:
 
     def _prepare_images(self, images):
         image_batch = torch.tensor(images, dtype=torch.float)
-        image_batch /= 255
         return image_batch
 
     def _show(self, source, result):
+        source = torch.clamp(self._denormalize(source) / 255, 0, 1)
+        result = torch.clamp(self._denormalize(result) / 255, 0, 1)
         num = len(source)
         plt.figure(figsize=(22, 6))
         for i in range(num):

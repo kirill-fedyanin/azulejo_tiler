@@ -22,6 +22,6 @@ class Network(nn.Module):
         x = torch.tanh(self.fc1(images))
         x = torch.tanh(self.fc2(x))
         x = torch.tanh(self.fc3(x))
-        x = torch.sigmoid(self.fc4(x))
+        x = torch.tanh(self.fc4(x))
 
         return x
