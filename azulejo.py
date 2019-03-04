@@ -16,13 +16,13 @@ config = {
     'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
     'hidden_size': 64,
     'batch_size': 16,
-    'epochs': 1,
+    'epochs': 500,
     'lr': 1e-3,
     'mean': MEAN,
     'variation': VARIATION,
     'validation_size': 16,
     'model_file': 'model/temp.pt',
-    'restore': True,
+    'restore': False,
     'convolution': True
 }
 
