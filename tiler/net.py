@@ -3,6 +3,28 @@ import torch.nn as nn
 import numpy as np
 
 
+class ConvNetwork(nn.Module):
+    """Generative network for tiles"""
+    def __init__(self, dimensions, hidden_size):
+        super(ConvNetwork, self).__init__()
+        self.hidden_size = hidden_size
+
+        self.conv1 = nn.Conv2d(3, 12, 4, stride=2)
+        self.deconv1 = nn.ConvTranspose2d(12, 3, 4, stride=2)
+
+    def forward(self, images=None):
+        images = images.permute(0, 3, 1, 2)
+        print(images[0])
+        x = self.conv1(images)
+        x = self.deconv1(x)
+        print(x[0])
+
+
+        return x
+
+
+
+
 class Network(nn.Module):
     """Generative network for tiles"""
     def __init__(self, in_size, hidden_size):
