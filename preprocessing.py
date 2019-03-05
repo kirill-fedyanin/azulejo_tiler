@@ -10,10 +10,12 @@ def preprocess():
     """Resize all images to same size and save it to"""
     show_dimensions()
     remove_duplicates()
-    for image_name in reversed(sorted(os.listdir(DATA_DIR))):
+    file_names = os.listdir(DATA_DIR)
+    for image_name in reversed(sorted(file_names)):
         image = Image.open(DATA_DIR + image_name)
         resized = image.resize(TILE_SIZE)
         resized.save(CACHE_DIR + image_name)
+    print(f"{len(file_names)} images converted to {TILE_SIZE[0]}x{TILE_SIZE[1]}")
 
 
 def remove_duplicates():
