@@ -12,7 +12,7 @@ class ConvNetwork(nn.Module):
 
         base = 16
         self.base = base
-        self.internal = 3136
+        self.internal = 2*self.base * 14 * 14
 
         self.conv1 = nn.Conv2d(3, base, 3, stride=2)
         self.conv2 = nn.Conv2d(base, 2*base, 2)
@@ -22,10 +22,13 @@ class ConvNetwork(nn.Module):
         self.deconv2 = nn.ConvTranspose2d(base, 3, 4, stride=2)
 
     def forward(self, images=None):
-        images = images.permute(0, 3, 1, 2)
-        x = torch.tanh(self.conv1(images))
-        x = torch.tanh(self.conv2(x))
-        x = torch.tanh(self.fc1(x.view((-1, self.internal))))
+        if images is None:
+            x = torch.rand((1, self.hidden_size))
+        else:
+            images = images.permute(0, 3, 1, 2)
+            x = torch.tanh(self.conv1(images))
+            x = torch.tanh(self.conv2(x))
+            x = torch.tanh(self.fc1(x.view((-1, self.internal))))
         x = torch.tanh(self.fc2(x))
         x = torch.tanh(self.deconv1(x.view((-1, 2*self.base, 14, 14))))
         x = torch.tanh(self.deconv2(x))
@@ -34,7 +37,6 @@ class ConvNetwork(nn.Module):
         x = x.permute((0, 2, 3, 1))
 
         return x
-
 
 
 class Network(nn.Module):

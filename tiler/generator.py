@@ -3,7 +3,7 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .net import Network
+from .net import Network, ConvNetwork
 from .helpers import normalize, denormalize
 
 
@@ -14,8 +14,11 @@ class Generator:
         self._init_net(config)
 
     def _init_net(self, config):
-        in_size = np.prod(config['dimensions'])
-        self.net = Network(in_size, config['hidden_size'])
+        if config['convolution']:
+            self.net = ConvNetwork(config['dimensions'], config['hidden_size'])
+        else:
+            in_size = np.prod(config['dimensions'])
+            self.net = Network(in_size, config['hidden_size'])
         self.net.load_state_dict(torch.load(config['model_file']))
         self.net.eval()
 

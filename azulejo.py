@@ -16,13 +16,13 @@ config = {
     'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
     'hidden_size': 128,
     'batch_size': 32,
-    'epochs': 1,
+    'epochs': 1500,
     'lr': 1e-3,
     'mean': MEAN,
     'variation': VARIATION,
     'validation_size': 32,
     'model_file': 'model/temp.pt',
-    'restore': True,
+    'restore': False,
     'convolution': True
 }
 
@@ -30,7 +30,8 @@ config = {
 def generate_tile():
     """Generate new random tile"""
     generator = Generator(config)
-    num = 10
+    num = 8
+    plt.figure(figsize=(22, 6))
     for i in range(num):
         image = generator.generate()
         plt.subplot(1, num, i+1)
@@ -55,5 +56,5 @@ def _load_images():
 
 
 if __name__ == '__main__':
-    train_tiler()
-    # generate_tile()
+    # train_tiler()
+    generate_tile()
