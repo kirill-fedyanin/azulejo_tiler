@@ -28,7 +28,7 @@ class ConvNetwork(nn.Module):
 
     def forward(self, images=None):
         if images is None:
-            x = torch.rand((1, self.hidden_size))
+            x = 2*torch.rand((1, self.hidden_size)) - 1
         else:
             images = images.permute(0, 3, 1, 2)
             x = torch.tanh(self.conv1(images))
@@ -60,7 +60,7 @@ class Network(nn.Module):
 
     def forward(self, images=None):
         if images is None:
-            x = torch.rand((1, self.hidden_size))
+            x = 2*torch.rand((1, self.hidden_size)) - 1
         else:
             images = images.view(-1, self.in_size)
             x = torch.tanh(self.fc1(images))
