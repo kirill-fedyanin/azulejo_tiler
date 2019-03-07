@@ -5,21 +5,26 @@ import numpy as np
 
 class ConvNetwork(nn.Module):
     """Generative network for tiles"""
-    def __init__(self, dimensions, hidden_size):
+    def __init__(self, dims, hidden_size):
         super(ConvNetwork, self).__init__()
         self.hidden_size = hidden_size
-        self.dims = dimensions
+        self.dims = dims
 
         base = 16
+        KERNEL_1 = 4
+        KERNEL_2 = 2
+        STRIDE = 1
         self.base = base
-        self.internal = 2*self.base * 14 * 14
+        self.conv_side = (dims[0] - KERNEL_1 + 1) - KERNEL_2 + 1
 
-        self.conv1 = nn.Conv2d(3, base, 3, stride=2)
-        self.conv2 = nn.Conv2d(base, 2*base, 2)
+        self.internal = 2 * self.base * self.conv_side**2
+
+        self.conv1 = nn.Conv2d(3, base, KERNEL_1)
+        self.conv2 = nn.Conv2d(base, 2*base, KERNEL_2)
         self.fc1 = nn.Linear(self.internal, self.hidden_size)
         self.fc2 = nn.Linear(self.hidden_size, self.internal)
-        self.deconv1 = nn.ConvTranspose2d(2*base, base, 2)
-        self.deconv2 = nn.ConvTranspose2d(base, 3, 4, stride=2)
+        self.deconv1 = nn.ConvTranspose2d(2*base, base, KERNEL_2)
+        self.deconv2 = nn.ConvTranspose2d(base, 3, KERNEL_1)
 
     def forward(self, images=None):
         if images is None:
@@ -30,7 +35,7 @@ class ConvNetwork(nn.Module):
             x = torch.tanh(self.conv2(x))
             x = torch.tanh(self.fc1(x.view((-1, self.internal))))
         x = torch.tanh(self.fc2(x))
-        x = torch.tanh(self.deconv1(x.view((-1, 2*self.base, 14, 14))))
+        x = torch.tanh(self.deconv1(x.view((-1, 2*self.base, self.conv_side, self.conv_side))))
         x = torch.tanh(self.deconv2(x))
 
         x = x.view((-1, self.dims[2], self.dims[0], self.dims[1]))
