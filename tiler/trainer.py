@@ -60,7 +60,7 @@ class Trainer:
     def _show(self, source, result):
         source = denormalize(source, self.config)
         result = denormalize(result, self.config)
-        num = len(source)
+        num = 8
         plt.figure(figsize=(22, 6))
         for i in range(num):
             plt.subplot(2, num, i+1)

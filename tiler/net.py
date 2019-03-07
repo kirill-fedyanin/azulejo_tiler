@@ -8,8 +8,9 @@ class ConvNetwork(nn.Module):
     def __init__(self, dimensions, hidden_size):
         super(ConvNetwork, self).__init__()
         self.hidden_size = hidden_size
+        self.dims = dimensions
 
-        base = 8
+        base = 16
         self.base = base
         self.internal = 3136
 
@@ -28,6 +29,9 @@ class ConvNetwork(nn.Module):
         x = torch.tanh(self.fc2(x))
         x = torch.tanh(self.deconv1(x.view((-1, 2*self.base, 14, 14))))
         x = torch.tanh(self.deconv2(x))
+
+        x = x.view((-1, self.dims[2], self.dims[0], self.dims[1]))
+        x = x.permute((0, 2, 3, 1))
 
         return x
 
