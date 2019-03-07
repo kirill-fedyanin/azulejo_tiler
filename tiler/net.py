@@ -3,6 +3,26 @@ import torch.nn as nn
 import numpy as np
 
 
+
+class GeneratorNet(nn.Module):
+    def __init(self, dims):
+        super(GeneratorNet, self).__init__()
+        self.dims = dims
+
+    def forward(self):
+        return 0
+
+
+class DiscriminatorNet(nn.Module):
+    def __init(self, dims):
+        super(DiscriminatorNet, self).__init__()
+        self.dims = dims
+
+    def forward(self):
+        return 0
+
+
+
 class ConvNetwork(nn.Module):
     """Generative network for tiles"""
     def __init__(self, dims, hidden_size):

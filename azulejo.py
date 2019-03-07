@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 
 from tiler import Generator, Trainer
 
-TILE_SIZE = (32, 32)
+TILE_SIZE = (64, 64)
 DATA_DIR = "data/"
 CACHE_DIR = "preprocessed/"
 MEAN = 139.
 VARIATION = 152.
+
 
 parser = argparse.ArgumentParser(description="Tiler generator")
 parser.add_argument('--experiment', '-x', default=None)
@@ -23,6 +24,7 @@ parser.add_argument('--epochs', '-e', type=int, default=1)
 parser.add_argument('--restore-model', default=False, action='store_true')
 parser.add_argument('--lr', type=float, default=1e-3)
 args = parser.parse_args()
+
 
 config = {
     'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
