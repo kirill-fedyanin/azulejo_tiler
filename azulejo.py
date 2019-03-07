@@ -1,4 +1,5 @@
 import os
+import argparse
 
 from PIL import Image
 import numpy as np
@@ -12,17 +13,29 @@ CACHE_DIR = "preprocessed/"
 MEAN = 139.
 VARIATION = 152.
 
+parser = argparse.ArgumentParser(description="Tiler generator")
+parser.add_argument('--experiment', '-x', default=None)
+parser.add_argument('--batch-size', '-b', type=int, default=32)
+parser.add_argument('--hidden-size', type=int, default=128)
+parser.add_argument('--validation-size', type=int, default=32)
+parser.add_argument('--show-size', type=int, default=8)
+parser.add_argument('--epochs', '-e', type=int, default=1)
+parser.add_argument('--restore-model', default=False, action='store_true')
+parser.add_argument('--lr', type=float, default=1e-3)
+args = parser.parse_args()
+
 config = {
     'dimensions': (TILE_SIZE[0], TILE_SIZE[1], 3),
-    'hidden_size': 128,
-    'batch_size': 32,
-    'epochs': 1500,
-    'lr': 1e-3,
+    'hidden_size': args.hidden_size,
+    'batch_size': args.batch_size,
+    'show_size': args.show_size,
+    'epochs': args.epochs,
+    'lr': args.lr,
     'mean': MEAN,
     'variation': VARIATION,
-    'validation_size': 32,
+    'validation_size': args.validation_size,
     'model_file': 'model/temp.pt',
-    'restore': False,
+    'restore': args.restore_model,
     'convolution': True
 }
 
@@ -30,7 +43,7 @@ config = {
 def generate_tile():
     """Generate new random tile"""
     generator = Generator(config)
-    num = 8
+    num = args.show_size
     plt.figure(figsize=(22, 6))
     for i in range(num):
         image = generator.generate()
@@ -56,5 +69,7 @@ def _load_images():
 
 
 if __name__ == '__main__':
-    # train_tiler()
-    generate_tile()
+    if args.experiment == 'train':
+        train_tiler()
+    else:
+        generate_tile()

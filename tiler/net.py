@@ -13,7 +13,6 @@ class ConvNetwork(nn.Module):
         base = 16
         KERNEL_1 = 4
         KERNEL_2 = 2
-        STRIDE = 1
         self.base = base
         self.conv_side = (dims[0] - KERNEL_1 + 1) - KERNEL_2 + 1
 
