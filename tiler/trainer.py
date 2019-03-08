@@ -10,8 +10,21 @@ class Trainer:
     def __init__(self, images, config):
         self.config = config
         self.images = normalize(np.stack(images), config)
-        self.net_generator = GeneratorNet()
-        self.net_discriminator = DiscriminatorNet()
+
+        self.net_generator, self.net_discriminator = self._init_models(config)
+
+    @staticmethod
+    def _init_models(config):
+        net_generator = GeneratorNet()
+        net_discriminator = DiscriminatorNet()
+
+        if config['restore']:
+            net_generator.load_state_dict(torch.load(config['g_model_file']))
+            net_generator.eval()
+            net_discriminator.load_state_dict(torch.load(config['d_model_file']))
+            net_discriminator.eval()
+
+        return net_generator, net_discriminator
 
     def train(self):
 
@@ -53,7 +66,7 @@ class Trainer:
             generator_loss.backward()
             optimizer_generator.step()
 
-            if e % 200 == 0:
+            if (e+1) % 200 == 0:
                 show(image_batch.detach().permute(0, 2, 3, 1), fake_images.detach().permute(0, 2, 3, 1), self.config)
 
         self.save_models()
