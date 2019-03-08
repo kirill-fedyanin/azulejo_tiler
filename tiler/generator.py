@@ -16,5 +16,8 @@ class Generator:
         self.net.eval()
 
     def generate(self):
-        image = self.net().detach().view(self.config['dimensions'])
+        random_vector = torch.rand((1, 100, 1, 1))
+        image = self.net(random_vector).detach()
+        dims = self.config['dimensions']
+        image = image.view((dims[2], dims[0], dims[1])).permute(1, 2, 0)
         return denormalize(image, self.config)
