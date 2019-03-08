@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import matplotlib.pyplot as plt
 
 from .net import Network, ConvNetwork, GeneratorNet, DiscriminatorNet
-from .helpers import normalize, denormalize
+from .helpers import normalize, denormalize, show
 
 
 class Trainer:
@@ -13,10 +12,10 @@ class Trainer:
         self.images = normalize(np.stack(images), config)
 
     def train(self):
-        # net_generator = GeneratorNet()
+        net_generator = GeneratorNet()
         net_discriminator = DiscriminatorNet()
 
-        # optimizer_generator = torch.optim.Adam(net_generator.parameters(), lr=2e-4, betas=(.5, .999))
+        optimizer_generator = torch.optim.Adam(net_generator.parameters(), lr=2e-4, betas=(.5, .999))
         optimizer_discriminator = torch.optim.Adam(net_discriminator.parameters(), lr=2e-4, betas=(.5, .999))
 
         criterion = nn.BCELoss()
@@ -24,25 +23,39 @@ class Trainer:
 
         for e in range(self.config['epochs']):
             indices = np.random.choice(train_num, self.config['batch_size'])
-            image_batch = torch.tensor(self.images[indices], dtype=torch.float)
+            image_batch = torch.tensor(self.images[indices], dtype=torch.float).permute(0, 3, 1, 2)
 
             optimizer_discriminator.zero_grad()
+            optimizer_generator.zero_grad()
+
+
             real_img_evaluation = net_discriminator(image_batch)
             ones = torch.ones_like(real_img_evaluation)
             real_img_loss = criterion(real_img_evaluation, ones)
 
-            fake_images = 2*torch.rand_like(image_batch) - 1
-            fake_img_evaluation = net_discriminator(fake_images)
+            random_vectors = torch.rand((self.config['batch_size'], 100, 1, 1))
+            fake_images = net_generator(random_vectors)
+            fake_img_evaluation = net_discriminator(fake_images.detach())
             zeros = torch.zeros_like(fake_img_evaluation)
             fake_img_loss = criterion(fake_img_evaluation, zeros)
 
-            print('---')
-            print(real_img_evaluation)
-            print(fake_img_evaluation)
+            if e % 10 == 0:
+                print(f"--{e}--")
+                print(real_img_evaluation)
+                print(fake_img_evaluation)
 
             loss = real_img_loss + fake_img_loss
             loss.backward()
             optimizer_discriminator.step()
+
+            generator_ones = torch.ones_like(fake_img_evaluation)
+            fake_img_evaluation = net_discriminator(fake_images)
+            generator_loss = criterion(fake_img_evaluation, generator_ones)
+            generator_loss.backward()
+            optimizer_generator.step()
+
+            if e % 200 == 0:
+                show(image_batch.detach().permute(0, 2, 3, 1), fake_images.detach().permute(0, 2, 3, 1), self.config)
 
     def validate(self):
         pass
@@ -79,7 +92,7 @@ class InitialTrainer:
         restored = self.net(image_batch)
         loss = self.loss(restored.view((-1, *self.config['dimensions'])), image_batch)
         print('validation loss', loss.item())
-        self._show(image_batch, restored.detach().view((-1, *self.config['dimensions'])), self.config['show_size'])
+        show(image_batch, restored.detach().view((-1, *self.config['dimensions'])), self.config)
 
     def _init_net(self, config):
         if config['convolution']:
@@ -97,14 +110,3 @@ class InitialTrainer:
     def _prepare_images(self, images):
         image_batch = torch.tensor(images, dtype=torch.float)
         return image_batch
-
-    def _show(self, source, result, num):
-        source = denormalize(source, self.config)
-        result = denormalize(result, self.config)
-        plt.figure(figsize=(22, 6))
-        for i in range(num):
-            plt.subplot(2, num, i+1)
-            plt.imshow(source[i])
-            plt.subplot(2, num, num+i+1)
-            plt.imshow(result[i])
-        plt.show()

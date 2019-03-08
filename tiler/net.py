@@ -27,7 +27,7 @@ class GeneratorNet(nn.Module):
         )
 
     def forward(self, input_vector):
-        input_vector = input_vector.permute(0, 3, 1, 2)
+        # input_vector = input_vector.permute(0, 3, 1, 2)
         return self.main(input_vector)
 
 
@@ -53,7 +53,6 @@ class DiscriminatorNet(nn.Module):
         )
 
     def forward(self, input_image):
-        input_image = input_image.permute(0, 3, 1, 2)
         return self.main(input_image).view(-1)
 
 
