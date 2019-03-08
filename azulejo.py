@@ -36,9 +36,11 @@ config = {
     'mean': MEAN,
     'variation': VARIATION,
     'validation_size': args.validation_size,
-    'model_file': 'model/temp.pt',
     'restore': args.restore_model,
-    'convolution': True
+    'convolution': True,
+    'model_file': 'model/temp.pt',
+    'g_model_file': 'model/temp_g.pt',
+    'd_model_file': 'model/temp_d.pt',
 }
 
 

@@ -10,13 +10,13 @@ class Trainer:
     def __init__(self, images, config):
         self.config = config
         self.images = normalize(np.stack(images), config)
+        self.net_generator = GeneratorNet()
+        self.net_discriminator = DiscriminatorNet()
 
     def train(self):
-        net_generator = GeneratorNet()
-        net_discriminator = DiscriminatorNet()
 
-        optimizer_generator = torch.optim.Adam(net_generator.parameters(), lr=2e-4, betas=(.5, .999))
-        optimizer_discriminator = torch.optim.Adam(net_discriminator.parameters(), lr=2e-4, betas=(.5, .999))
+        optimizer_generator = torch.optim.Adam(self.net_generator.parameters(), lr=2e-4, betas=(.5, .999))
+        optimizer_discriminator = torch.optim.Adam(self.net_discriminator.parameters(), lr=2e-4, betas=(.5, .999))
 
         criterion = nn.BCELoss()
         train_num = len(self.images) - self.config['validation_size']
@@ -28,14 +28,13 @@ class Trainer:
             optimizer_discriminator.zero_grad()
             optimizer_generator.zero_grad()
 
-
-            real_img_evaluation = net_discriminator(image_batch)
+            real_img_evaluation = self.net_discriminator(image_batch)
             ones = torch.ones_like(real_img_evaluation)
             real_img_loss = criterion(real_img_evaluation, ones)
 
             random_vectors = torch.rand((self.config['batch_size'], 100, 1, 1))
-            fake_images = net_generator(random_vectors)
-            fake_img_evaluation = net_discriminator(fake_images.detach())
+            fake_images = self.net_generator(random_vectors)
+            fake_img_evaluation = self.net_discriminator(fake_images.detach())
             zeros = torch.zeros_like(fake_img_evaluation)
             fake_img_loss = criterion(fake_img_evaluation, zeros)
 
@@ -49,7 +48,7 @@ class Trainer:
             optimizer_discriminator.step()
 
             generator_ones = torch.ones_like(fake_img_evaluation)
-            fake_img_evaluation = net_discriminator(fake_images)
+            fake_img_evaluation = self.net_discriminator(fake_images)
             generator_loss = criterion(fake_img_evaluation, generator_ones)
             generator_loss.backward()
             optimizer_generator.step()
@@ -57,8 +56,14 @@ class Trainer:
             if e % 200 == 0:
                 show(image_batch.detach().permute(0, 2, 3, 1), fake_images.detach().permute(0, 2, 3, 1), self.config)
 
+        self.save_models()
+
     def validate(self):
         pass
+
+    def save_models(self):
+        torch.save(self.net_generator.state_dict(), self.config['g_model_file'])
+        torch.save(self.net_discriminator.state_dict(), self.config['d_model_file'])
 
 
 class InitialTrainer:
