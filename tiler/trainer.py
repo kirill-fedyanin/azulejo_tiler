@@ -14,18 +14,14 @@ class Trainer:
         self.criterion = nn.BCELoss()
 
     def train(self):
-        optimizer_generator = torch.optim.Adam(self.net_generator.parameters(), lr=2e-4, betas=(.5, .999))
-        optimizer_discriminator = torch.optim.Adam(self.net_discriminator.parameters(), lr=2e-4, betas=(.5, .999))
-
-        train_num = len(self.images) - self.config['validation_size']
+        optimizer_generator = torch.optim.Adam(self.net_generator.parameters(), lr=self.config['lr'])
+        optimizer_discriminator = torch.optim.Adam(self.net_discriminator.parameters(), lr=self.config['lr'])
 
         for e in range(self.config['epochs']):
-            indices = np.random.choice(train_num, self.config['batch_size'])
-            image_batch = torch.tensor(self.images[indices], dtype=torch.float).permute(0, 3, 1, 2)
-
             optimizer_discriminator.zero_grad()
             optimizer_generator.zero_grad()
 
+            image_batch = self._get_batch()
             real_img_evaluation = self.net_discriminator(image_batch)
             ones = torch.ones_like(real_img_evaluation)
             real_img_loss = self.criterion(real_img_evaluation, ones)
@@ -36,10 +32,7 @@ class Trainer:
             zeros = torch.zeros_like(fake_img_evaluation)
             fake_img_loss = self.criterion(fake_img_evaluation, zeros)
 
-            if e % 10 == 0:
-                print(f"--{e}--")
-                print(real_img_evaluation)
-                print(fake_img_evaluation)
+            self._print_evaluation(e, real_img_evaluation, fake_img_evaluation)
 
             loss = real_img_loss + fake_img_loss
             loss.backward()
@@ -55,8 +48,7 @@ class Trainer:
                 self._save_models(self.net_generator, self.net_discriminator, self.config)
 
     def validate(self):
-        validation_images = self.images[-self.config['validation_size']:]
-        image_batch = torch.tensor(validation_images, dtype=torch.float).permute(0, 3, 1, 2)
+        image_batch = self._adapt_images(self.images[-self.config['validation_size']:])
 
         real_img_evaluation = self.net_discriminator(image_batch)
         ones = torch.ones_like(real_img_evaluation)
@@ -67,10 +59,28 @@ class Trainer:
         fake_img_evaluation = self.net_discriminator(fake_images.detach())
         zeros = torch.zeros_like(fake_img_evaluation)
         fake_img_loss = self.criterion(fake_img_evaluation, zeros)
+
         print("Validation discriminator loss")
         print("On real images: ", real_img_loss.item())
         print("On fake images: ", fake_img_loss.item())
         show(image_batch.detach().permute(0, 2, 3, 1), fake_images.detach().permute(0, 2, 3, 1), self.config)
+
+    def _get_batch(self):
+        train_num = len(self.images) - self.config['validation_size']
+        indices = np.random.choice(train_num, self.config['batch_size'])
+        image_batch = self._adapt_images(self.images[indices])
+        return image_batch
+
+    @staticmethod
+    def _adapt_images(images):
+        return torch.tensor(images, dtype=torch.float).permute(0, 3, 1, 2)
+
+    @staticmethod
+    def _print_evaluation(e, real_img_evaluation, fake_img_evaluation):
+        if e % 10 == 0:
+            print(f"--{e}--")
+            print(real_img_evaluation)
+            print(fake_img_evaluation)
 
     @staticmethod
     def _save_models(net_generator, net_discriminator, config):

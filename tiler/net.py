@@ -1,11 +1,8 @@
-import torch
 import torch.nn as nn
-import numpy as np
 
 
 class GeneratorNet(nn.Module):
     """Generate images from random input vector"""
-
     def __init__(self):
         super(GeneratorNet, self).__init__()
         self.main = nn.Sequential(
@@ -27,7 +24,6 @@ class GeneratorNet(nn.Module):
         )
 
     def forward(self, input_vector):
-        # input_vector = input_vector.permute(0, 3, 1, 2)
         return self.main(input_vector)
 
 
